@@ -1,42 +1,77 @@
 package si.uni_lj.fri.rso.ir_property.api;
 
+import com.kumuluz.ee.configuration.utils.ConfigurationUtil;
+import si.uni_lj.fri.rso.ir_property.cdi.Config;
 import si.uni_lj.fri.rso.ir_property.cdi.PropertyDatabase;
 import si.uni_lj.fri.rso.ir_property.models.Property;
 
+import javax.enterprise.context.RequestScoped;
+import javax.inject.Inject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.List;
 
+@RequestScoped
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
 @Path("properties")
 public class PropertyResource {
+    @Inject
+    private Config config;
+
+    @GET
+    @Path("/config")
+    public Response config() {
+        String response =
+                "{\n" +
+                "    \"endpointEnabled\": \"%b\"\n" +
+                "}";
+        response = String.format(response, config.getEndpointEnabled());
+        return Response.ok(response).build();
+    }
+
     @GET
     public Response getAllProperties() {
-        List<Property> properties = PropertyDatabase.getProperties();
-        return Response.ok(properties).build();
+        if (ConfigurationUtil.getInstance().getBoolean("rest-config.endpoint-enabled").orElse(false)) {
+            List<Property> properties = PropertyDatabase.getProperties();
+            return Response.ok(properties).build();
+        } else {
+            return Response.status(Response.Status.SERVICE_UNAVAILABLE).entity("{\"reason\": \"Endpoint disabled.\"}").build();
+        }
     }
 
     @GET
     @Path("/{propertyId}")
     public Response getProperty(@PathParam("propertyId") String propertyId) {
-        Property property = PropertyDatabase.getProperty(propertyId);
-        return property != null
-                ? Response.ok(property).build()
-                : Response.status(Response.Status.NOT_FOUND).build();
+        if (ConfigurationUtil.getInstance().getBoolean("rest-config.endpoint-enabled").orElse(false)) {
+            Property property = PropertyDatabase.getProperty(propertyId);
+            return property != null
+                    ? Response.ok(property).build()
+                    : Response.status(Response.Status.NOT_FOUND).build();
+        } else {
+            return Response.status(Response.Status.SERVICE_UNAVAILABLE).entity("{\"reason\": \"Endpoint disabled.\"}").build();
+        }
     }
 
     @POST
     public Response addNewProperty(Property property) {
-        PropertyDatabase.addProperty(property);
-        return Response.noContent().build();
+        if (ConfigurationUtil.getInstance().getBoolean("rest-config.endpoint-enabled").orElse(false)) {
+            PropertyDatabase.addProperty(property);
+            return Response.noContent().build();
+        } else {
+            return Response.status(Response.Status.SERVICE_UNAVAILABLE).entity("{\"reason\": \"Endpoint disabled.\"}").build();
+        }
     }
 
     @DELETE
     @Path("/{propertyId}")
     public Response deleteProperty(@PathParam("propertyId") String propertyId) {
-        PropertyDatabase.deleteProperty(propertyId);
-        return Response.noContent().build();
+        if (ConfigurationUtil.getInstance().getBoolean("rest-config.endpoint-enabled").orElse(false)) {
+            PropertyDatabase.deleteProperty(propertyId);
+            return Response.noContent().build();
+        } else {
+            return Response.status(Response.Status.SERVICE_UNAVAILABLE).entity("{\"reason\": \"Endpoint disabled.\"}").build();
+        }
     }
 }
