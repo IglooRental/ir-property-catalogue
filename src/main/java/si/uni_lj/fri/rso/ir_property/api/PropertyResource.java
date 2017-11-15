@@ -1,6 +1,7 @@
 package si.uni_lj.fri.rso.ir_property.api;
 
 import com.kumuluz.ee.configuration.utils.ConfigurationUtil;
+import org.eclipse.microprofile.metrics.annotation.Metered;
 import si.uni_lj.fri.rso.ir_property.cdi.Config;
 import si.uni_lj.fri.rso.ir_property.cdi.PropertyDatabase;
 import si.uni_lj.fri.rso.ir_property.models.Property;
@@ -17,21 +18,8 @@ import java.util.List;
 @Produces(MediaType.APPLICATION_JSON)
 @Path("properties")
 public class PropertyResource {
-    @Inject
-    private Config config;
-
     @GET
-    @Path("/config")
-    public Response config() {
-        String response =
-                "{\n" +
-                "    \"endpointEnabled\": \"%b\"\n" +
-                "}";
-        response = String.format(response, config.getEndpointEnabled());
-        return Response.ok(response).build();
-    }
-
-    @GET
+    @Metered
     public Response getAllProperties() {
         if (ConfigurationUtil.getInstance().getBoolean("rest-config.endpoint-enabled").orElse(false)) {
             List<Property> properties = PropertyDatabase.getProperties();
@@ -42,6 +30,7 @@ public class PropertyResource {
     }
 
     @GET
+    @Metered
     @Path("/{propertyId}")
     public Response getProperty(@PathParam("propertyId") String propertyId) {
         if (ConfigurationUtil.getInstance().getBoolean("rest-config.endpoint-enabled").orElse(false)) {
@@ -55,6 +44,7 @@ public class PropertyResource {
     }
 
     @POST
+    @Metered
     public Response addNewProperty(Property property) {
         if (ConfigurationUtil.getInstance().getBoolean("rest-config.endpoint-enabled").orElse(false)) {
             PropertyDatabase.addProperty(property);
@@ -65,6 +55,7 @@ public class PropertyResource {
     }
 
     @DELETE
+    @Metered
     @Path("/{propertyId}")
     public Response deleteProperty(@PathParam("propertyId") String propertyId) {
         if (ConfigurationUtil.getInstance().getBoolean("rest-config.endpoint-enabled").orElse(false)) {
