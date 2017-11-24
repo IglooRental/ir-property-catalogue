@@ -1,6 +1,7 @@
 package si.uni_lj.fri.rso.ir_property.api;
 
 import com.kumuluz.ee.configuration.utils.ConfigurationUtil;
+import com.kumuluz.ee.logs.cdi.Log;
 import org.eclipse.microprofile.metrics.annotation.Metered;
 import si.uni_lj.fri.rso.ir_property.cdi.Config;
 import si.uni_lj.fri.rso.ir_property.cdi.PropertyDatabase;
@@ -12,12 +13,16 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.List;
+import java.util.logging.Logger;
 
 @RequestScoped
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
 @Path("properties")
+@Log
 public class PropertyResource {
+    private Logger log = Logger.getLogger(PropertyResource.class.getName());
+
     @GET
     @Metered
     public Response getAllProperties() {
