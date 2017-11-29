@@ -10,8 +10,10 @@ import si.uni_lj.fri.rso.ir_property.models.Property;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.ws.rs.*;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -24,6 +26,9 @@ public class PropertyResource {
     @Inject
     private PropertyDatabase propertyDatabase;
 
+    @Context
+    protected UriInfo uriInfo;
+
     private Logger log = Logger.getLogger(PropertyResource.class.getName());
 
     @GET
@@ -32,6 +37,17 @@ public class PropertyResource {
         if (ConfigurationUtil.getInstance().getBoolean("rest-config.endpoint-enabled").orElse(false)) {
             List<Property> properties = propertyDatabase.getProperties();
             return Response.ok(properties).build();
+        } else {
+            return Response.status(Response.Status.SERVICE_UNAVAILABLE).entity("{\"reason\": \"Endpoint disabled.\"}").build();
+        }
+    }
+
+    @GET
+    @Path("/filtered")
+    public Response getPropertiesFiltered() {
+        if (ConfigurationUtil.getInstance().getBoolean("rest-config.endpoint-enabled").orElse(false)) {
+            List<Property> customers = propertyDatabase.getPropertiesFilter(uriInfo);
+            return Response.status(Response.Status.OK).entity(customers).build();
         } else {
             return Response.status(Response.Status.SERVICE_UNAVAILABLE).entity("{\"reason\": \"Endpoint disabled.\"}").build();
         }
