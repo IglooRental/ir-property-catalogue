@@ -7,6 +7,12 @@ kumuluzee:
     base-url: http://localhost:8081
     http:
       port: 8081
+  datasources:
+    - jndi-name: jdbc/IRpropertycatalogueDS
+      connection-url: jdbc:postgresql://localhost:5432/igloo
+      username: dbusers
+      password: postgres
+      max-pool-size: 20
   config:
     start-retry-delay-ms: 500
     max-retry-delay-ms: 900000
@@ -19,9 +25,8 @@ kumuluzee:
     checks:
       disk-space-health-check:
         threshold: 100000000
-#    checks:
-#      data-source-health-check:
-#        jndi-name: jdbc/PropertyCatalogueDS
+      data-source-health-check:
+        jndi-name: jdbc/IRpropertycatalogueDS
   cors-filter:
     servlet:
       allow-origin: "*"

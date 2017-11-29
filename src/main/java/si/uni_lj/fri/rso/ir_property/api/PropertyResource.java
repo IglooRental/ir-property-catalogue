@@ -21,13 +21,16 @@ import java.util.logging.Logger;
 @Path("properties")
 @Log
 public class PropertyResource {
+    @Inject
+    private PropertyDatabase propertyDatabase;
+
     private Logger log = Logger.getLogger(PropertyResource.class.getName());
 
     @GET
     @Metered
     public Response getAllProperties() {
         if (ConfigurationUtil.getInstance().getBoolean("rest-config.endpoint-enabled").orElse(false)) {
-            List<Property> properties = PropertyDatabase.getProperties();
+            List<Property> properties = propertyDatabase.getProperties();
             return Response.ok(properties).build();
         } else {
             return Response.status(Response.Status.SERVICE_UNAVAILABLE).entity("{\"reason\": \"Endpoint disabled.\"}").build();
@@ -39,7 +42,7 @@ public class PropertyResource {
     @Path("/{propertyId}")
     public Response getProperty(@PathParam("propertyId") String propertyId) {
         if (ConfigurationUtil.getInstance().getBoolean("rest-config.endpoint-enabled").orElse(false)) {
-            Property property = PropertyDatabase.getProperty(propertyId);
+            Property property = propertyDatabase.getProperty(propertyId);
             return property != null
                     ? Response.ok(property).build()
                     : Response.status(Response.Status.NOT_FOUND).build();
@@ -52,7 +55,7 @@ public class PropertyResource {
     @Metered
     public Response addNewProperty(Property property) {
         if (ConfigurationUtil.getInstance().getBoolean("rest-config.endpoint-enabled").orElse(false)) {
-            PropertyDatabase.addProperty(property);
+            propertyDatabase.createProperty(property);
             return Response.noContent().build();
         } else {
             return Response.status(Response.Status.SERVICE_UNAVAILABLE).entity("{\"reason\": \"Endpoint disabled.\"}").build();
@@ -64,7 +67,7 @@ public class PropertyResource {
     @Path("/{propertyId}")
     public Response deleteProperty(@PathParam("propertyId") String propertyId) {
         if (ConfigurationUtil.getInstance().getBoolean("rest-config.endpoint-enabled").orElse(false)) {
-            PropertyDatabase.deleteProperty(propertyId);
+            propertyDatabase.deleteProperty(propertyId);
             return Response.noContent().build();
         } else {
             return Response.status(Response.Status.SERVICE_UNAVAILABLE).entity("{\"reason\": \"Endpoint disabled.\"}").build();
