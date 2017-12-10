@@ -2,6 +2,7 @@ package si.uni_lj.fri.rso.ir_property.api;
 
 import com.kumuluz.ee.configuration.utils.ConfigurationUtil;
 import com.kumuluz.ee.logs.cdi.Log;
+import com.kumuluz.ee.logs.cdi.LogParams;
 import org.eclipse.microprofile.metrics.annotation.Metered;
 import si.uni_lj.fri.rso.ir_property.cdi.Config;
 import si.uni_lj.fri.rso.ir_property.cdi.PropertyDatabase;

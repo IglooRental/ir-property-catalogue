@@ -29,9 +29,10 @@ public class ManagementResource {
         String response =
                 "{\n" +
                 "    \"endpointEnabled\": \"%b\",\n" +
-                "    \"healthy\": \"%b\"\n" +
+                "    \"healthy\": \"%b\",\n" +
+                "    \"loadIntensity\": \"%d\"\n" +
                 "}";
-        response = String.format(response, config.getEndpointEnabled(), config.getHealthy());
+        response = String.format(response, config.getEndpointEnabled(), config.getHealthy(), config.getLoadIntensity());
         return Response.ok(response).build();
     }
 
