@@ -1,8 +1,10 @@
 package si.uni_lj.fri.rso.ir_property.models;
 
 import org.eclipse.persistence.annotations.UuidGenerator;
+import si.uni_lj.fri.rso.ir_property.models.dependencies.Review;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity(name = "properties")
 @NamedQueries(value = {
@@ -18,6 +20,9 @@ public class Property {
 
     @Column(name = "owner_id")
     private String ownerId;
+
+    @Transient
+    private List<Review> reviews;
 
     public Property(String id, String location, String ownerId) {
         this.id = id;
@@ -49,5 +54,13 @@ public class Property {
 
     public void setOwnerId(String ownerId) {
         this.ownerId = ownerId;
+    }
+
+    public List<Review> getReviews() {
+        return reviews;
+    }
+
+    public void setReviews(List<Review> reviews) {
+        this.reviews = reviews;
     }
 }

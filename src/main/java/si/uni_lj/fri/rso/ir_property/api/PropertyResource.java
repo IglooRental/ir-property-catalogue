@@ -57,9 +57,9 @@ public class PropertyResource {
     @GET
     @Metered
     @Path("/{propertyId}")
-    public Response getProperty(@PathParam("propertyId") String propertyId) {
+    public Response getProperty(@PathParam("propertyId") String propertyId, @DefaultValue("true") @QueryParam("includeExtended") boolean includeExtended) {
         if (ConfigurationUtil.getInstance().getBoolean("rest-config.endpoint-enabled").orElse(false)) {
-            Property property = propertyDatabase.getProperty(propertyId);
+            Property property = propertyDatabase.getProperty(propertyId, includeExtended);
             return property != null
                     ? Response.ok(property).build()
                     : Response.status(Response.Status.NOT_FOUND).build();
